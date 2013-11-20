@@ -82,7 +82,10 @@ will display on hover. </p>             </td>             <td class="code">     
     </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>When saving, the selected value is immediately displayed to the user so he has instant
 feedback about what is going on. In the meantime we fire an AJAX call to the server.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">save: </span><span class="o">=&gt;</span>
       <span class="nv">payload = </span><span class="p">{}</span>
-      <span class="nv">val = </span><span class="nx">@editor</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&quot;[name=</span><span class="si">#{</span><span class="nx">@name</span><span class="si">}</span><span class="s">]&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+      <span class="k">if</span> <span class="nx">@type</span> <span class="o">is</span> <span class="s">&#39;radio-boxes&#39;</span>
+        <span class="nv">val = </span><span class="nx">@editor</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&quot;input:radio[name=</span><span class="si">#{</span><span class="nx">@name</span><span class="si">}</span><span class="s">]:checked&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+      <span class="k">else</span>
+        <span class="nv">val = </span><span class="nx">@editor</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&quot;[name=</span><span class="si">#{</span><span class="nx">@name</span><span class="si">}</span><span class="s">]&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
       <span class="nx">payload</span><span class="p">[</span><span class="nx">@name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">val</span>
       <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span> 
         <span class="nv">type: </span><span class="nx">@method</span>
