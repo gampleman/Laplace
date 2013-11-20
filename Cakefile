@@ -48,35 +48,25 @@ task 'develop', ->
         <head>
           <title>Laplace Test</title>
           <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-          <script src="laplace.js?nocache=#{Math.random()}"></script>
+          <script src="/lib/laplace.js?nocache=#{Math.random()}"></script>
           <link rel="stylesheet" href="app.css" />
         </head>
         <body>
           <h1>Blank</h1>
-          <form>
-            <input type="hidden" class="icuiinp" />
-            <input type="submit"/>
-          </form>
-          
-          <h1>Editing</h1>
-          <form>
-            <input type="hidden" class="icuiinp" value='{"start_date":"2013-06-23T17:30:00.000Z","rrules":[{"rule_type":"IceCube::WeeklyRule", "count": 3, "interval":1,"validations":{"offset_from_pascha": [-3]}}]}' />
-            <input type="submit"/>
-          </form>
-          <h1>Make new</h1>
-          <form>
-            <textarea id="ic"></textarea>
-            <button id="st">Init ICUI with Data</button>
-          </form>
+          <div>Greeting: <span class="laplace" data-url="/api">Hello</span></div>
+					<div>County: <span class="laplace" data-url="/api" data-name='country' data-type="select" data-values='["United Kingdom", "United States", "Bolivia"]'>Bolivia</span></div>
           <script>
-            
+          $(function(){
+							$('.laplace').laplace();  
+					});
           </script>
         </body>
       </html>""", "UTF-8")
       response.end()
+
     if uri == '/spec/'
       response.writeHead(200)
-      scripts = ["jasmine-2.0.0-rc2/jasmine.js", "jasmine-2.0.0-rc2/jasmine-html.js", "jasmine-2.0.0-rc2/boot.js", "http://code.jquery.com/jquery-1.10.2.min.js", "../laplace.js", "spec/SpecHelper.js"]
+      scripts = ["jasmine-2.0.0-rc2/jasmine.js", "jasmine-2.0.0-rc2/jasmine-html.js", "jasmine-2.0.0-rc2/boot.js", "http://code.jquery.com/jquery-1.10.2.min.js", "../lib/laplace.js", "spec/SpecHelper.js"]
       scripts.push(f.replace(/.coffee$/, '.js')) for f in fs.readdirSync('./spec') when f.match(/Spec.coffee/)
       script_tags = ("<script type='text/javascript' src='#{f}'></script>" for f in scripts).join("\n")
       response.write("""<!DOCTYPE HTML>
@@ -91,25 +81,16 @@ task 'develop', ->
       <body></body>
       </html>""", "UTF-8")
       response.end()
-    else if uri == '/laplace.js'
-      exec "coffee -cb lib/laplace.coffee", (e) ->
-        if e
-          console.log e
-          response.write("""$(function() {document.write("<h1>Compile Error</h1><pre>#{("" + e).replace(/\n/g, "\\n")}</pre>");});""", 'UTF-8')
-          response.end()
-        else
-          exec "cat lib/laplace.js > js/laplace.js", (e) ->
-            if e
-              response.write("""document.body.write('<h1>Compile Error</h1><pre>#{e}</pre>)""", 'UTF-8')
-              response.end()
-            else
-              fs.readFile 'js/laplace.js', "binary", (err, file) ->
-                response.write(file, "binary")
-                response.end()
     else if extension == 'js' && !uri.match(/jasmine/)
       comps = uri.split('.')
       comps.pop()
       sendCompiledFile(response, comps.join('.'))
+    else if uri == '/api'
+      setTimeout ->
+        response.writeHead(200)
+        response.write("Sucessfuly saved")
+        response.end()
+      , 1000
     else
       sendFile(response, uri[1..])
   .listen 8888
@@ -128,6 +109,7 @@ sendFile = (response, path, cb = ->) ->
 
 sendCompiledFile = (response, path, cb = ->) ->
   path = path[1..]
+  console.log path
   exec "coffee -pb #{path}.coffee", (e, o) ->
     if e
       console.log e
