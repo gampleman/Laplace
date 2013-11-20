@@ -6,6 +6,8 @@ Laplace is meant to be a simple, but reusable in-place editor built in CoffeeScr
 
 It is controlled by a simple data api inspired by Bootstrap.
 
+You can see a [quick demo](http://code.gampleman.eu/Laplace/) or read the [annotated source code](http://code.gampleman.eu/Laplace/docs/laplace.html).
+
 ### Usage
 
 To make something editable, first give it the class `laplace`. Then set several data attributes either on the element itself, or on a parent element, or in the configuration object (in order of prefference).
