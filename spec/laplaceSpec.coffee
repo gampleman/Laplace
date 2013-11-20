@@ -20,31 +20,38 @@ describe "Laplace", ->
 		expect(laplace['type']).toBe('text')            # default value
 		$('#lap').parent().remove()
 	
+	$parent = null
+	
 	beforeEach ->
 		$('body').append("""
 		<div class="lcontainer">
 		<span class="laplace" data-url='/api'>Value</span>
 		</div>
 		""")
+		$parent = $('.laplace').parent()
 		
 	afterEach ->
 		$('.lcontainer').remove()
 	
 	it "should display the edit button", ->
 		$('.laplace').laplace()
-		expect($('.laplace').parent().children().last().text()).toBe('Edit')
+		expect($parent.children().last().text()).toBe('Edit')
 		
 	it "should display a text editor", ->
 		$('.laplace').laplace name: 'name', type: 'text'
-		$parent = $('.laplace').parent()
 		$parent.find('a').click()
 		expect($parent.find("input[type=text]").length).toBe(1)
 		expect($parent.find("input[type=text]").val()).toBe("Value")
 		expect($parent.find("a").length).toBe(2)
+		
+	it "should display a textarea editor", ->
+		$('.laplace').laplace name: 'name', type: 'textarea'
+		$parent.find('a').click()
+		expect($parent.find("textarea").length).toBe(1)
+		expect($parent.find("textarea").val()).toBe("Value")
 	
 	it "should display a select", ->
 		$('.laplace').laplace name: "name", type: 'select', values: [["Label1", "Value1"], "Label and Value"]
-		$parent = $('.laplace').parent()
 		$parent.find('a').click()
 		expect($parent.find('select').length).toBe(1)
 		options = $parent.find('select>option')
@@ -55,15 +62,14 @@ describe "Laplace", ->
 		expect($(options[1]).attr('value')).toBe("Label and Value")
 		
 	it "should display radio buttons", ->
-		$('.laplace').laplace name: "name", type: 'radio-buttons', values: [["Label1", "Value1"], "Label and Value"]
-		$parent = $('.laplace').parent()
+		$('.laplace').laplace name: "name", type: 'radio-buttons', values: [["Label1", "Value1"], "Label and Value", "Value"]
 		$parent.find('a').click()
-		expect($parent.find('input[type=radio]').length).toBe(2)
-		expect($parent.find('label').length).toBe(2)
+		expect($parent.find('input[type=radio]').length).toBe(3)
+		expect($parent.find('label').length).toBe(3)
+		expect($parent.find('input:radio:checked').attr('value')).toBe('Value')
 		
 	it "should allow the user to cancel", ->
 		$('.laplace').laplace name: 'name', type: 'text'
-		$parent = $('.laplace').parent()
 		$parent.find('a').click()
 		$parent.find('a.laplace-cancel').click()
 		expect($parent.children().length).toBe(2)
@@ -71,16 +77,22 @@ describe "Laplace", ->
 		
 	it "should allow the user to save and immediately show the chosen value", ->
 		$('.laplace').laplace name: 'name', type: 'text'
-		$parent = $('.laplace').parent()
 		$parent.find('a').click()
 		$parent.find('input').val('Updated Value')
 		$parent.find('a.laplace-save').click()
 		expect($parent.children().length).toBe(2)
 		expect($parent.children().first().text()).toBe("Updated Value")
+	
+	it "should after saving show the value of the radio box", ->
+		$('.laplace').laplace name: "name", type: 'radio-buttons', values: [["Label1", "Value1"], "Label and Value"]
+		$parent.find('a').click()
+		$parent.find('input').last().click()
+		$parent.find('a.laplace-save').click()
+		expect($('.laplace').text()).toBe("Label and Value")
+		
 
 	it "should after saving update with the server value", (done) ->
 		$('.laplace').laplace name: 'name', type: 'text'
-		$parent = $('.laplace').parent()
 		$parent.find('a').click()
 		$parent.find('input').val('Updated Value')
 		$parent.find('a.laplace-save').click()

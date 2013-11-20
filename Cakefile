@@ -55,6 +55,8 @@ task 'develop', ->
           <h1>Blank</h1>
           <div>Greeting: <span class="laplace" data-url="/api">Hello</span></div>
 					<div>County: <span class="laplace" data-url="/api" data-name='country' data-type="select" data-values='["United Kingdom", "United States", "Bolivia"]'>Bolivia</span></div>
+          <div>Gender: <span class="laplace" data-url="/api" data-name="gender" data-type="radio-buttons" data-values='["Male", "Female"]'>Male</span></div>
+          <div>Description: <br/> <span class="laplace" data-url="/api" data-name="description" data-type="textarea">Lorem ipsum dolor sit amet</span></div>
           <script>
           $(function(){
 							$('.laplace').laplace();  
