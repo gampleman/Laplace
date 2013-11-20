@@ -1,0 +1,111 @@
+<!DOCTYPE html>  <html> <head>   <title>laplace.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               laplace.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Laplace</h1>
+
+<p>Laplace is a very simple in place editor written in object oriented CoffeeScript and
+distributed as a jQuery (or Zepto) plugin. This is the annotated source code.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">do</span> <span class="nf">($ = jQuery) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>The Laplace class takes care of a single editable value in the page.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">class</span> <span class="nx">Laplace</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>The constructor function is responsible for initializing options and adding an edit link that
+will display on hover. </p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">constructor: </span><span class="nf">(el, opts) -&gt;</span>
+      <span class="vi">@el = </span><span class="nx">$</span> <span class="nx">el</span>
+      <span class="k">for</span> <span class="nx">opt</span> <span class="k">in</span> <span class="p">[</span><span class="s">&quot;type&quot;</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="s">&quot;values&quot;</span><span class="p">,</span> <span class="s">&quot;edit-label&quot;</span><span class="p">,</span> <span class="s">&quot;save-label&quot;</span><span class="p">,</span> <span class="s">&quot;cancel-label&quot;</span><span class="p">,</span> <span class="s">&quot;url&quot;</span><span class="p">,</span> <span class="s">&quot;method&quot;</span><span class="p">]</span>
+        <span class="nx">@setOption</span> <span class="nx">opt</span><span class="p">,</span> <span class="nx">opts</span><span class="p">[</span><span class="nx">opt</span><span class="p">]</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Laplace needs to accept two syntaxes for values for radio buttons and selects. One is of the form:</p>
+
+<pre><code>["Value 1", "Value 2"]
+</code></pre>
+
+<p>Which gets transformed into:</p>
+
+<pre><code>&lt;select&gt;
+  &lt;option value="Value 1"&gt;Value 1&lt;/option&gt;
+  &lt;option value="Value 2"&gt;Value 2&lt;/option&gt;
+&lt;/select&gt;
+</code></pre>
+
+<p>The other syntax:</p>
+
+<pre><code>[["Label 1", "Value 1"], ["Label 2", "Value 2"]]
+</code></pre>
+
+<p>Gets transformed into:</p>
+
+<pre><code>&lt;select&gt;
+  &lt;option value="Value 1"&gt;Label 1&lt;/option&gt;
+  &lt;option value="Value 2"&gt;Label 2&lt;/option&gt;
+&lt;/select&gt;
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="vi">@values = </span><span class="k">for</span> <span class="nx">value</span> <span class="k">in</span> <span class="nx">@values</span>
+        <span class="k">if</span> <span class="nb">Object</span><span class="o">::</span><span class="nx">toString</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">is</span> <span class="s">&#39;[object Array]&#39;</span>
+          <span class="p">[</span><span class="nx">label</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span>
+        <span class="k">else</span>
+          <span class="nv">label = </span><span class="nx">value</span>
+        <span class="p">[</span><span class="nx">label</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span>
+      <span class="nv">$editLink = </span><span class="nx">$</span> <span class="s">&quot;&lt;a href=&#39;</span><span class="err">#</span><span class="s">&#39; class=&#39;laplace-edit-label&#39;&gt;</span><span class="si">#{</span><span class="nx">@</span><span class="p">[</span><span class="s">&#39;edit-label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s">&lt;/a&gt;&quot;</span>
+      <span class="nx">$editLink</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nx">@edit</span><span class="p">)</span>
+      <span class="nx">@el</span><span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="nx">$editLink</span><span class="p">)</span>
+      <span class="nx">$editLink</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
+      <span class="nx">@el</span><span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">hover</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="nx">$editLink</span><span class="p">.</span><span class="nx">show</span><span class="p">()),</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="nx">$editLink</span><span class="p">.</span><span class="nx">hide</span><span class="p">())</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Options are evaluated in a hierarchy of precedence:  </p>
+
+<ol>
+<li>data attribute on the element itself</li>
+<li>data attributes on parent elements in order of proximity</li>
+<li>an options object passed to the <code>laplace</code> call</li>
+<li>the <code>$.fn.laplace.defaults</code></li>
+</ol>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">setOption: </span><span class="nf">(name, defaultValue) -&gt;</span>
+      <span class="k">if</span> <span class="nv">dataValue = </span><span class="nx">@el</span><span class="p">.</span><span class="nx">closest</span><span class="p">(</span><span class="s">&quot;[data-</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">]&quot;</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
+        <span class="nx">@</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">dataValue</span>
+      <span class="k">else</span>
+        <span class="nx">@</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">defaultValue</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>When we need to edit a field we need to dynamically construct the HTML interface.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">edit: </span><span class="o">=&gt;</span>
+      <span class="nx">@el</span><span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;.laplace-edit-label&#39;</span><span class="p">).</span><span class="nx">remove</span><span class="p">()</span>
+      <span class="nv">code = </span><span class="k">switch</span> <span class="nx">@type</span>
+        <span class="k">when</span> <span class="s">&quot;select&quot;</span>
+          <span class="nv">options = </span><span class="k">for</span> <span class="p">[</span><span class="nx">label</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span> <span class="k">in</span> <span class="nx">@values</span>
+            <span class="s">&quot;&quot;&quot;&lt;option value=&quot;</span><span class="si">#{</span><span class="nx">value</span><span class="si">}</span><span class="s">&quot; </span><span class="si">#{</span><span class="k">if</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">text</span><span class="p">()</span> <span class="o">is</span> <span class="nx">label</span> <span class="k">then</span> <span class="s">&#39;selected&#39;</span> <span class="k">else</span> <span class="s">&#39;&#39;</span><span class="si">}</span><span class="s">&gt;</span><span class="si">#{</span><span class="nx">label</span><span class="si">}</span><span class="s">&lt;/option&gt;&quot;&quot;&quot;</span>
+            
+          <span class="s">&quot;&quot;&quot;&lt;select name=&quot;</span><span class="si">#{</span><span class="nx">@name</span><span class="si">}</span><span class="s">&quot;&gt;</span><span class="si">#{</span><span class="nx">options</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s">&quot;\n&quot;</span><span class="p">)</span><span class="si">}</span><span class="s">&lt;/select&gt;&quot;&quot;&quot;</span>
+        <span class="k">when</span> <span class="s">&quot;radio-buttons&quot;</span>
+          <span class="nv">options = </span><span class="k">for</span> <span class="p">[</span><span class="nx">label</span><span class="p">,</span> <span class="nx">value</span><span class="p">]</span> <span class="k">in</span> <span class="nx">@values</span>
+            <span class="nv">selected = </span><span class="k">if</span> <span class="nx">@el</span><span class="p">.</span><span class="nx">text</span><span class="p">()</span> <span class="o">is</span> <span class="nx">label</span> <span class="k">then</span> <span class="s">&#39;selected&#39;</span> <span class="k">else</span> <span class="s">&#39;&#39;</span>
+            <span class="s">&quot;&quot;&quot;&lt;label&gt;&lt;input type=&quot;radio&quot; value=&quot;</span><span class="si">#{</span><span class="nx">value</span><span class="si">}</span><span class="s">&quot; </span><span class="si">#{</span><span class="nx">selected</span><span class="si">}</span><span class="s"> name=&quot;</span><span class="si">#{</span><span class="nx">@name</span><span class="si">}</span><span class="s">&quot; /&gt;</span><span class="si">#{</span><span class="nx">label</span><span class="si">}</span><span class="s">&lt;/label&gt;&quot;&quot;&quot;</span>
+          <span class="nx">options</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s">&quot;\n&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span>
+          <span class="s">&quot;&quot;&quot;&lt;input type=&quot;</span><span class="si">#{</span><span class="nx">@type</span><span class="si">}</span><span class="s">&quot; name=&quot;</span><span class="si">#{</span><span class="nx">@name</span><span class="si">}</span><span class="s">&quot; value=&quot;</span><span class="si">#{</span><span class="nx">@el</span><span class="p">.</span><span class="nx">text</span><span class="p">()</span><span class="si">}</span><span class="s">&quot; /&gt;&quot;&quot;&quot;</span>
+          
+      <span class="nx">code</span> <span class="o">+=</span> <span class="s">&quot;&quot;&quot;&lt;a href=&#39;</span><span class="err">#</span><span class="s">&#39; class=&#39;laplace-save&#39;&gt;</span><span class="si">#{</span><span class="nx">@</span><span class="p">[</span><span class="s">&quot;save-label&quot;</span><span class="p">]</span><span class="si">}</span><span class="s">&lt;/a&gt; &lt;a href=&#39;</span><span class="err">#</span><span class="s">&#39; class=&#39;laplace-cancel&#39;&gt;</span><span class="si">#{</span><span class="nx">@</span><span class="p">[</span><span class="s">&quot;cancel-label&quot;</span><span class="p">]</span><span class="si">}</span><span class="s">&lt;/a&gt;&quot;&quot;&quot;</span> 
+      <span class="vi">@editor = </span><span class="nx">$</span> <span class="s">&quot;&lt;span&gt;</span><span class="si">#{</span><span class="nx">code</span><span class="si">}</span><span class="s">&lt;/span&gt;&quot;</span>
+      <span class="nx">@editor</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;a.laplace-cancel&#39;</span><span class="p">).</span><span class="nx">click</span> <span class="nx">@cancel</span>
+      <span class="nx">@editor</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;a.laplace-save&#39;</span><span class="p">).</span><span class="nx">click</span> <span class="nx">@save</span>
+      <span class="nx">@el</span><span class="p">.</span><span class="nx">replaceWith</span><span class="p">(</span><span class="nx">@editor</span><span class="p">)</span>
+      <span class="k">return</span> <span class="kc">false</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Canceling is just about restoring the original element and re-adding the edit link.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">cancel: </span><span class="o">=&gt;</span>
+      <span class="nx">@editor</span><span class="p">.</span><span class="nx">replaceWith</span> <span class="nx">@el</span>
+      <span class="nv">$editLink = </span><span class="nx">$</span> <span class="s">&quot;&lt;a href=&#39;</span><span class="err">#</span><span class="s">&#39; class=&#39;laplace-edit-label&#39;&gt;</span><span class="si">#{</span><span class="nx">@</span><span class="p">[</span><span class="s">&#39;edit-label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s">&lt;/a&gt;&quot;</span>
+      <span class="nx">$editLink</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nx">@edit</span><span class="p">)</span>
+      <span class="nx">@el</span><span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="nx">$editLink</span><span class="p">)</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>When saving, the selected value is immediately displayed to the user so he has instant
+feedback about what is going on. In the meantime we fire an AJAX call to the server.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">save: </span><span class="o">=&gt;</span>
+      <span class="nv">payload = </span><span class="p">{}</span>
+      <span class="nv">val = </span><span class="nx">@editor</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&quot;[name=</span><span class="si">#{</span><span class="nx">@name</span><span class="si">}</span><span class="s">]&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+      <span class="nx">payload</span><span class="p">[</span><span class="nx">@name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">val</span>
+      <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span> 
+        <span class="nv">type: </span><span class="nx">@method</span>
+        <span class="nv">url: </span><span class="nx">@url</span>
+        <span class="nv">data: </span><span class="nx">payload</span>
+        <span class="nv">success: </span><span class="nx">@success</span>
+      <span class="nx">@cancel</span><span class="p">()</span>
+      <span class="nx">@el</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="nx">val</span><span class="p">)</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>When the AJAX call completes we simply tell our element to display the new content.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">success: </span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nx">@el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Finally we package it all up as a jQuery plugin, allowing mass setting of options.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">$.fn.laplace = </span><span class="nf">(options = {}) -&gt;</span>
+    <span class="nv">opts = </span><span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="nx">$</span><span class="p">.</span><span class="nx">fn</span><span class="p">.</span><span class="nx">laplace</span><span class="p">.</span><span class="nx">defaults</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
+    <span class="nx">@each</span> <span class="o">-&gt;</span>
+      <span class="vi">@laplace = </span><span class="k">new</span> <span class="nx">Laplace</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">opts</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>The default options are exposed like this so, perhaps for localization purposes,
+they can be globally overrriden.    </p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">$.fn.laplace.defaults = </span><span class="p">{</span>
+    <span class="s">&quot;type&quot;</span><span class="o">:</span> <span class="s">&quot;text&quot;</span>
+    <span class="s">&quot;edit-label&quot;</span><span class="o">:</span> <span class="s">&quot;Edit&quot;</span>
+    <span class="s">&quot;save-label&quot;</span><span class="o">:</span> <span class="s">&quot;Save&quot;</span>
+    <span class="s">&quot;cancel-label&quot;</span><span class="o">:</span> <span class="s">&quot;Cancel&quot;</span>
+    <span class="s">&quot;method&quot;</span><span class="o">:</span> <span class="s">&quot;POST&quot;</span>
+    <span class="s">&quot;values&quot;</span><span class="o">:</span> <span class="p">[]</span>
+  <span class="p">}</span>
+    
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
