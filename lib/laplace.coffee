@@ -105,6 +105,7 @@ do ($ = jQuery) ->
 		
 		# When the AJAX call completes we simply tell our element to display the new content.
 		success: (data) =>
+			console.log data
 			@el.html(data)
 	
 	# Finally we package it all up as a jQuery plugin, allowing mass setting of options.
