@@ -46,6 +46,7 @@ do ($ = jQuery) ->
 			@el.parent().hover (-> $editLink.show()), (-> $editLink.hide())
 		
 		# Options are evaluated in a hierarchy of precedence:  
+		#
 		# 1. data attribute on the element itself
 		# 2. data attributes on parent elements in order of proximity
 		# 3. an options object passed to the `laplace` call
