@@ -93,7 +93,10 @@ do ($ = jQuery) ->
 		# feedback about what is going on. In the meantime we fire an AJAX call to the server.
 		save: =>
 			payload = {}
-			val = @editor.find("[name=#{@name}]").val()
+			if @type is 'radio-boxes'
+				val = @editor.find("input:radio[name=#{@name}]:checked").val()
+			else
+				val = @editor.find("[name=#{@name}]").val()
 			payload[@name] = val
 			$.ajax 
 				type: @method
