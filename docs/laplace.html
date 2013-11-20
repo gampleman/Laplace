@@ -40,11 +40,14 @@ will display on hover. </p>             </td>             <td class="code">     
       <span class="nx">@el</span><span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="nx">$editLink</span><span class="p">)</span>
       <span class="nx">$editLink</span><span class="p">.</span><span class="nx">hide</span><span class="p">()</span>
       <span class="nx">@el</span><span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">hover</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="nx">$editLink</span><span class="p">.</span><span class="nx">show</span><span class="p">()),</span> <span class="p">(</span><span class="o">-&gt;</span> <span class="nx">$editLink</span><span class="p">.</span><span class="nx">hide</span><span class="p">())</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Options are evaluated in a hierarchy of precedence: <br />
-1. data attribute on the element itself
-2. data attributes on parent elements in order of proximity
-3. an options object passed to the <code>laplace</code> call
-4. the <code>$.fn.laplace.defaults</code></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">setOption: </span><span class="nf">(name, defaultValue) -&gt;</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Options are evaluated in a hierarchy of precedence:  </p>
+
+<ol>
+<li>data attribute on the element itself</li>
+<li>data attributes on parent elements in order of proximity</li>
+<li>an options object passed to the <code>laplace</code> call</li>
+<li>the <code>$.fn.laplace.defaults</code></li>
+</ol>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">setOption: </span><span class="nf">(name, defaultValue) -&gt;</span>
       <span class="k">if</span> <span class="nv">dataValue = </span><span class="nx">@el</span><span class="p">.</span><span class="nx">closest</span><span class="p">(</span><span class="s">&quot;[data-</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">]&quot;</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
         <span class="nx">@</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">dataValue</span>
       <span class="k">else</span>
