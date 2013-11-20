@@ -39,11 +39,7 @@ do ($ = jQuery) ->
 				else
 					label = value
 				[label, value]
-			$editLink = $ "<a href='#' class='laplace-edit-label'>#{@['edit-label']}</a>"
-			$editLink.click(@edit)
-			@el.parent().append($editLink)
-			$editLink.hide()
-			@el.parent().hover (-> $editLink.show()), (-> $editLink.hide())
+			@makeEditLink()
 		
 		# Options are evaluated in a hierarchy of precedence:  
 		# 1. data attribute on the element itself
@@ -55,7 +51,15 @@ do ($ = jQuery) ->
 				@[name] = dataValue
 			else
 				@[name] = defaultValue
-
+		
+		# Creates a link next to the target element that shows on hover of the parent element.
+		makeEditLink: ->
+			$editLink = $ "<a href='#' class='laplace-edit-label'>#{@['edit-label']}</a>"
+			$editLink.click(@edit)
+			@el.parent().append($editLink)
+			$editLink.hide()
+			@el.parent().hover (-> $editLink.show()), (-> $editLink.hide())
+		
 		# When we need to edit a field we need to dynamically construct the HTML interface.
 		edit: =>
 			@el.parent().find('.laplace-edit-label').remove()
@@ -67,10 +71,11 @@ do ($ = jQuery) ->
 					"""<select name="#{@name}">#{options.join("\n")}</select>"""
 				when "radio-buttons"
 					options = for [label, value] in @values
-						selected = if @el.text() is label then 'selected' else ''
+						selected = if @el.text() is label then 'checked' else ''
 						"""<label><input type="radio" value="#{value}" #{selected} name="#{@name}" />#{label}</label>"""
 					options.join("\n")
-
+				when "textarea"
+					"""<textarea name="#{@name}">#{@el.text()}</textarea>"""
 				else
 					"""<input type="#{@type}" name="#{@name}" value="#{@el.text()}" />"""
 					
@@ -84,19 +89,18 @@ do ($ = jQuery) ->
 		# Canceling is just about restoring the original element and re-adding the edit link.
 		cancel: =>
 			@editor.replaceWith @el
-			$editLink = $ "<a href='#' class='laplace-edit-label'>#{@['edit-label']}</a>"
-			$editLink.click(@edit)
-			@el.parent().append($editLink)
+			@makeEditLink()
 		
 		# When saving, the selected value is immediately displayed to the user so he has instant
 		# feedback about what is going on. In the meantime we fire an AJAX call to the server.
 		save: =>
 			payload = {}
-			if @type is 'radio-boxes'
+			if @type is 'radio-buttons'
 				val = @editor.find("input:radio[name=#{@name}]:checked").val()
 			else
 				val = @editor.find("[name=#{@name}]").val()
 			payload[@name] = val
+			console.log payload
 			$.ajax 
 				type: @method
 				url: @url
