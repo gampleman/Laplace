@@ -18,7 +18,7 @@ To make something editable, first give it the class `laplace`. Then set several 
 
 `name` - Use as the forms name value.
 
-`type` - What kind of input is this supposed to be. Supports all values of the `type` attribute for the `input` tag (except file), plus the special values of `select` and `radio-buttons`. These require also the following to be set:
+`type` - What kind of input is this supposed to be. Supports all values of the `type` attribute for the `input` tag (except file), plus the special values of `textarea`, `select` and `radio-buttons`. `select` and `radio-buttons` also require the following to be set:
 
 `values` - The possible values as a JSON array. Either `["value", "value", ...]` or `[["Label", "Value"], ["Label", "Value"]]` syntax is supported.
 
